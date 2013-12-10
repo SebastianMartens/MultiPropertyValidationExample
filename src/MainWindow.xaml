@@ -1,0 +1,13 @@
+﻿<Window x:Class="MultiPropertyValidationExample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:MultiPropertyValidationExample.UI"
+        Title="MainWindow" Height="350" Width="525">
+    
+    <Grid>
+        <DockPanel >
+            <ui:GroupAdressListView/>
+        </DockPanel>
+        
+    </Grid>
+</Window>
