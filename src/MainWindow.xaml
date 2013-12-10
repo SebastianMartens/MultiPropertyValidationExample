@@ -4,10 +4,10 @@
         xmlns:ui="clr-namespace:MultiPropertyValidationExample.UI"
         Title="MainWindow" Height="350" Width="525">
     
-    <Grid>
-        <DockPanel >
-            <ui:GroupAdressListView/>
-        </DockPanel>
+   
+    <DockPanel >
+        <ui:GroupAdressCompositesListView/>
+    </DockPanel>
         
-    </Grid>
+   
 </Window>

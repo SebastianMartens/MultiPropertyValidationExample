@@ -64,12 +64,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Framework\BaseConverter.cs" />
     <Compile Include="Framework\DomainObject.cs" />
-    <Compile Include="Model\GroupAdressInfoRow.cs" />
-    <Compile Include="UI\GroupAdressesViewModel.cs" />
-    <Compile Include="UI\GroupAdressesListView.xaml.cs">
-      <DependentUpon>GroupAdressesListView.xaml</DependentUpon>
+    <Compile Include="Model\GroupAdressComposite.cs" />
+    <Compile Include="UI\GroupAdressCompositesListViewModel.cs" />
+    <Compile Include="UI\GroupAdressCompositesListView.xaml.cs">
+      <DependentUpon>GroupAdressCompositesListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Converters\GroupAdressToStringConverter.cs" />
+    <Compile Include="UI\GroupAdressInfoRowViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -82,7 +85,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UI\GroupAdressesListView.xaml">
+    <Page Include="UI\GroupAdressCompositesListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

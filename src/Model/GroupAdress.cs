@@ -27,6 +27,16 @@ namespace MultiPropertyValidationExample.Model
             UShortValue = ToUshort(value);
         }
 
+        /// <summary>
+        /// 2nd constructor for safe initialisation.
+        /// </summary>
+        /// <param name="value"></param>
+        public GroupAdress(ushort value)
+        {
+            UShortValue = value;
+        }
+
+
         #region toString and parse methods
 
         /// <summary>
