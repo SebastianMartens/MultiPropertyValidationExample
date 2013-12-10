@@ -19,7 +19,7 @@ namespace MultiPropertyValidationExample.UI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value.ToString();            
+            return value!=null ? value.ToString() : String.Empty;            
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -28,6 +28,8 @@ namespace MultiPropertyValidationExample.UI.Converters
             // Converting valid values is easy.
             // But what about unconvertable values?? => see different examples below.
             // -----------
+            if (value == null || value.Equals("0") || String.IsNullOrEmpty(value.ToString()))
+                return null;
             GroupAdress result;
 
             // Option 1: do not convert, rely on data binding for error handling:

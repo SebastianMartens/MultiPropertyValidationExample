@@ -21,8 +21,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.Practices.Prism.ViewModel;
 
 
@@ -59,7 +57,7 @@ namespace MultiPropertyValidationExample.Framework
         /// <seealso cref="INotifyDataErrorInfo"/>
         public bool HasErrors
         {
-            get { return this.ErrorsContainer.HasErrors; }
+            get { return ErrorsContainer.HasErrors; }
         }
 
         /// <summary>

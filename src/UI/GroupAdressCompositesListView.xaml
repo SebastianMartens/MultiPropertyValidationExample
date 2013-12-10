@@ -13,7 +13,7 @@
     <DataGrid ItemsSource="{Binding GroupAdressCollectionView.View}" AutoGenerateColumns="False">
        
         <DataGrid.Columns>
-            <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>            
+            <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}"/>            
             <DataGridTextColumn Header="Read GA" Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
