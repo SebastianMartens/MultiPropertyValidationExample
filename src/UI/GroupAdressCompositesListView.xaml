@@ -9,17 +9,27 @@
       d:DesignHeight="300" d:DesignWidth="300"
       d:DataContext="{d:DesignInstance Type=ui:GroupAdressCompositesListViewModel}"
 	>
-
-    <!--  
-    <DataGrid ItemsSource="{Binding GroupAdressCollectionView.View}" />
-    -->
+    
     <DataGrid ItemsSource="{Binding GroupAdressCollectionView.View}" AutoGenerateColumns="False">
+       
         <DataGrid.Columns>
-            <DataGridTextColumn Header="Name" Binding="{Binding Name}"></DataGridTextColumn>            
-            <DataGridTextColumn Header="Read GA" Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}"></DataGridTextColumn>
-            <DataGridTextColumn Header="Write GA" Binding="{Binding WriteAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}"></DataGridTextColumn>
+            <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>            
+            <DataGridTextColumn Header="Read GA" Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="DataGridCell.ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="Write GA" Binding="{Binding WriteAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
+                <DataGridTextColumn.ElementStyle>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="DataGridCell.ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                    </Style>
+                </DataGridTextColumn.ElementStyle>
+            </DataGridTextColumn>
         </DataGrid.Columns>
     </DataGrid>
-   
-            
+
+    
 </UserControl>

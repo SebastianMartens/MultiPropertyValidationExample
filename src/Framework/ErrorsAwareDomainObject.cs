@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.Practices.Prism.ViewModel;
 
 
@@ -34,22 +36,16 @@ namespace MultiPropertyValidationExample.Framework
     /// implements <see cref="INotifyDataErrorInfo"/> using <see cref="System.ComponentModel.DataAnnotations.ValidationAttribute"/> instances
     /// on the validated properties.
     /// </remarks>
-    public abstract class DomainObject : INotifyPropertyChanged, INotifyDataErrorInfo
+    public abstract class ErrorsAwareDomainObject : INotifyPropertyChanged, INotifyDataErrorInfo
     {
         private ErrorsContainer<ValidationResult> _errorsContainer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DomainObject"/> class.
+        /// Initializes a new instance of the <see cref="ErrorsAwareDomainObject"/> class.
         /// </summary>
-        protected DomainObject()
+        protected ErrorsAwareDomainObject()
         {            
-        }
-
-        /// <summary>
-        /// Event raised when a property value changes.
-        /// </summary>
-        /// <seealso cref="INotifyPropertyChanged"/>
-        public event PropertyChangedEventHandler PropertyChanged;
+        }        
 
         /// <summary>
         /// Event raised when the validation status changes.
@@ -80,7 +76,7 @@ namespace MultiPropertyValidationExample.Framework
         /// <summary>
         /// Returns the errors for <paramref name="propertyName"/>.
         /// </summary>
-        /// <param name="propertyName">The name of the property for which the errors are requested.</param>
+        /// <param name="propertyName">The name of the propertyName for which the errors are requested.</param>
         /// <returns>An enumerable with the errors.</returns>
         /// <seealso cref="INotifyDataErrorInfo"/>
         public IEnumerable GetErrors(string propertyName)
@@ -89,12 +85,90 @@ namespace MultiPropertyValidationExample.Framework
         }
 
 
-        #region raiseproperty changed helper (maybe part of some other framework base class...)
+
+        /// <summary>
+        /// Validates <paramref name="value"/> as the value for the propertyName named <paramref name="propertyName"/>.
+        /// </summary>
+        /// <param name="propertyName">The name of the propertyName.</param>
+        /// <param name="value">The value for the propertyName.</param>
+        protected void ValidateProperty(string propertyName, object value)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                throw new ArgumentNullException("propertyName");
+            }
+
+            ValidateProperty(new ValidationContext(this, null, null) { MemberName = propertyName }, value);
+        }
+
+        /// <summary>
+        /// Validates <paramref name="value"/> as the value for the propertyName specified by 
+        /// <paramref name="validationContext"/> using data annotations validation attributes.
+        /// </summary>
+        /// <param name="validationContext">The context for the validation.</param>
+        /// <param name="value">The value for the propertyName.</param>
+        protected virtual void ValidateProperty(ValidationContext validationContext, object value)
+        {
+            if (validationContext == null)
+            {
+                throw new ArgumentNullException("validationContext");
+            }
+
+            var validationResults = new List<ValidationResult>();
+            Validator.TryValidateProperty(value, validationContext, validationResults);
+
+            ErrorsContainer.SetErrors(validationContext.MemberName, validationResults);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="ErrorsChanged"/> event.
+        /// </summary>
+        /// <param name="propertyName">The name of the propertyName which changed its error status.</param>
+        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method supports event.")]
+        protected void RaiseErrorsChanged(string propertyName)
+        {
+            OnErrorsChanged(new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Raises the <see cref="ErrorsChanged"/> event.
+        /// </summary>
+        /// <param name="e">The argument for the event.</param>
+        protected virtual void OnErrorsChanged(DataErrorsChangedEventArgs e)
+        {
+            var handler = ErrorsChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }          
+
+        public void SetError(string propertyName, string errorMessage)
+        {
+            ErrorsContainer.SetErrors(propertyName, 
+                new List<ValidationResult>
+                    {
+                        new ValidationResult(errorMessage)
+                    });
+        }
+
+        public void SetError(string errorMessage)
+        {
+            SetError("", errorMessage);            
+        }
+
+        #region raiseproperty changed stuff (maybe part of some other framework base class...)
+
+        /// <summary>
+        /// Event raised when a propertyName value changes.
+        /// </summary>
+        /// <seealso cref="INotifyPropertyChanged"/>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Raises the <see cref="PropertyChanged"/> event.
         /// </summary>
-        /// <param name="propertyName">The name of the changed property.</param>
+        /// <param name="propertyName">The name of the changed propertyName.</param>
         [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method supports event.")]
         protected void RaisePropertyChanged(string propertyName)
         {
@@ -115,62 +189,5 @@ namespace MultiPropertyValidationExample.Framework
         }
 
         #endregion
-
-        /// <summary>
-        /// Validates <paramref name="value"/> as the value for the property named <paramref name="propertyName"/>.
-        /// </summary>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <param name="value">The value for the property.</param>
-        protected void ValidateProperty(string propertyName, object value)
-        {
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                throw new ArgumentNullException("propertyName");
-            }
-
-            ValidateProperty(new ValidationContext(this, null, null) { MemberName = propertyName }, value);
-        }
-
-        /// <summary>
-        /// Validates <paramref name="value"/> as the value for the property specified by 
-        /// <paramref name="validationContext"/> using data annotations validation attributes.
-        /// </summary>
-        /// <param name="validationContext">The context for the validation.</param>
-        /// <param name="value">The value for the property.</param>
-        protected virtual void ValidateProperty(ValidationContext validationContext, object value)
-        {
-            if (validationContext == null)
-            {
-                throw new ArgumentNullException("validationContext");
-            }
-
-            var validationResults = new List<ValidationResult>();
-            Validator.TryValidateProperty(value, validationContext, validationResults);
-
-            ErrorsContainer.SetErrors(validationContext.MemberName, validationResults);
-        }
-
-        /// <summary>
-        /// Raises the <see cref="ErrorsChanged"/> event.
-        /// </summary>
-        /// <param name="propertyName">The name of the property which changed its error status.</param>
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "Method supports event.")]
-        protected void RaiseErrorsChanged(string propertyName)
-        {
-            OnErrorsChanged(new DataErrorsChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// Raises the <see cref="ErrorsChanged"/> event.
-        /// </summary>
-        /// <param name="e">The argument for the event.</param>
-        protected virtual void OnErrorsChanged(DataErrorsChangedEventArgs e)
-        {
-            var handler = ErrorsChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
     }
 }

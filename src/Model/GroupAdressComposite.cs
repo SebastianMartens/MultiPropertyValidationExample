@@ -1,12 +1,13 @@
 ﻿using System;
+using MultiPropertyValidationExample.Framework;
 
 namespace MultiPropertyValidationExample.Model
 {
     /// <summary>
     /// Composite of multile items and additional information.
-    /// Used to binding and validation in a multi-property example.
+    /// Used to binding and validation in a multi-propertyName example.
     /// </summary>
-    public class GroupAdressComposite
+    public class GroupAdressComposite : ErrorsAwareDomainObject
     {                
         public string Name { get; set; }
 

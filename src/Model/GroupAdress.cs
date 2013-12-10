@@ -1,4 +1,5 @@
 ﻿using System;
+using MultiPropertyValidationExample.Framework;
 
 namespace MultiPropertyValidationExample.Model
 {
@@ -6,7 +7,7 @@ namespace MultiPropertyValidationExample.Model
     /// Grou Adress is a value object, so it has no identity ("Id")!
     /// Additionally we can make it immutable in this case.
     /// </summary>
-    public class GroupAdress
+    public class GroupAdress: ErrorsAwareDomainObject
     {
         /// <summary>
         /// Backing field for storing the value.
@@ -14,7 +15,7 @@ namespace MultiPropertyValidationExample.Model
         /// Outside of this class we work with different string representations but the value is
         /// stored as ushort behind the scenes (every GroupAdress can be represented as ushort).
         /// 
-        /// As the GroupAdress class is an immutable ValueObject, this property is readonly!
+        /// As the GroupAdress class is an immutable ValueObject, this propertyName is readonly!
         /// </summary>
         public readonly ushort UShortValue;
 
@@ -23,8 +24,8 @@ namespace MultiPropertyValidationExample.Model
         /// </summary>
         /// <param name="value"></param>
         public GroupAdress(string value)
-        {
-            UShortValue = ToUshort(value);
+        {           
+            UShortValue = ToUshort(value);         
         }
 
         /// <summary>
@@ -88,6 +89,22 @@ namespace MultiPropertyValidationExample.Model
             return ushort.Parse(value);
         }
 
+        public static bool TryParse(string value, out GroupAdress val)
+        {
+            try
+            {
+                val = Parse(value);
+                return true;
+            }
+            catch (Exception)
+            {
+                val = null;
+                return false;
+            }            
+        }
+
         #endregion
+
+       
     }
 }

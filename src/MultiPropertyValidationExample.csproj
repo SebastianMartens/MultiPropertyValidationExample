@@ -38,6 +38,9 @@
     <Reference Include="Microsoft.Practices.Prism">
       <HintPath>..\lib\Microsoft.Practices.Prism.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
     <Reference Include="System" />
@@ -65,7 +68,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Framework\BaseConverter.cs" />
-    <Compile Include="Framework\DomainObject.cs" />
+    <Compile Include="Framework\ErrorsAwareDomainObject.cs" />
+    <Compile Include="Framework\Test\DomainObjectTest.cs" />
     <Compile Include="Model\GroupAdressComposite.cs" />
     <Compile Include="UI\GroupAdressCompositesListViewModel.cs" />
     <Compile Include="UI\GroupAdressCompositesListView.xaml.cs">
@@ -109,6 +113,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
