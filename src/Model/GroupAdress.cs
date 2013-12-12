@@ -89,6 +89,12 @@ namespace MultiPropertyValidationExample.Model
             return ushort.Parse(value);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
         public static bool TryParse(string value, out GroupAdress val)
         {
             try

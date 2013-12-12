@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using MultiPropertyValidationExample.Model;
 using NUnit.Framework;
@@ -44,21 +42,7 @@ namespace MultiPropertyValidationExample.Framework.Test
             // Assert
             Assert.IsFalse(result);            
         }
-
-        //[Test]
-        //public void Should_be_able_to_clear_error_from_property()
-        //{
-        //    // Arrange
-        //    _domainObject.SetError("X", "X");
-
-        //    // Act
-        //    _domainObject.ClearErrorOfProperty("X");
-        //    var result = _domainObject.GetErrors("X") as List<string>;
-
-        //    // Assert
-        //    Assert.IsNotNull(result);
-        //    Assert.AreEqual(0, result.Count());
-        //}
+       
 
         [Test]
         public void Should_be_able_to_get_error_for_property()

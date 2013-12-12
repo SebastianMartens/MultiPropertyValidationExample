@@ -8,40 +8,47 @@ namespace MultiPropertyValidationExample.Model
     /// <summary>
     /// Composite of multile items and additional information.
     /// Used to binding and validation in a multi-propertyName example.
-    /// </summary>
-    /// TODO: check out custom validation attribute!
-    //[CustomValidation(typeof(GroupAdressComposite), "Validate")]
+    /// </summary>        
+    // CustomValidation only works with .Net 4.5! TODO: get it running... Until then I use "IValidatableObject"
+    // Don't forget to set XAML binding property "ValidatesOnNotifyDataErrors=True" !?
+    //[CustomValidation(typeof(GroupAdressComposite), "ValidateReadOrWriteGroupAdressMustBeFilled")]    
     public class GroupAdressComposite : ErrorsAwareDomainObject, IValidatableObject
     {
         private GroupAdress _readAdress;
+        private GroupAdress _writeAdress;
+
         public string Name { get; set; }
 
         public GroupAdress ReadAdress
         {
             get { return _readAdress; }
             set { 
-                _readAdress = value;         
-       
-                // This does not work as GroupAdress is a value object an will never change!
-                // TODO: solution??
-
-                //ReadAdress.ErrorsChanged += delegate { ...}
+                _readAdress = value;                                                
                   
+                // connection between Validation and ErrorsAwarenes has to be discussed.
+                // => move code to "ErrorsAwareDomainObject" class??
                 var errors = Validate(new ValidationContext(this));
                 foreach (var validationResult in errors)
                 {
-                    // TODO: show Row errors in UI!!
                     SetError(validationResult.ErrorMessage);
-                }                            
-                  
-                
-                //Validator.ValidateObject(this, new ValidationContext(this));
-                  
-
+                }                                                                             
             }
         }
+        
+        public GroupAdress WriteAdress
+        {
+            get { return _writeAdress; }
+            set 
+            { 
+                _writeAdress = value;
 
-        public GroupAdress WriteAdress { get; set; }
+                var errors = Validate(new ValidationContext(this));
+                foreach (var validationResult in errors)
+                {
+                    SetError(validationResult.ErrorMessage);
+                }
+            }
+        }
 
         public static GroupAdressComposite GetDummyItem(int seed)
         {
@@ -54,7 +61,24 @@ namespace MultiPropertyValidationExample.Model
                 };
         }
 
-      
+        /// <summary>
+        /// Example of correct validation method when using attributes.
+        /// </summary>
+        //public static ValidationResult ValidateReadOrWriteGroupAdressMustBeFilled(object obj, ValidationContext context)
+        //{
+        //    var gac = obj as GroupAdressComposite;
+        //    if (gac == null)
+        //        throw new ArgumentException();
+
+        //    if (
+        //      (gac.ReadAdress == null || gac.ReadAdress.HasErrors) &&
+        //      (gac.WriteAdress == null || gac.WriteAdress.HasErrors))
+        //    {
+        //        return new ValidationResult("At least one Group Adress has to be filled with a valid value.", new List<string> { "ReadAdress", "WriteAdress" });
+        //    }
+
+        //    return ValidationResult.Success;
+        //}
 
         /// <summary>
         /// Validation is usually implemented at domain-level.
@@ -76,18 +100,18 @@ namespace MultiPropertyValidationExample.Model
             // 3) Validate the object-level attributes
             // 4) If any validators are invalid, abort validation returning the failure(s)
             // 5) If on the desktop framework and the object implements IValidatableObject, then call its Validate method and return any failure(s)                                   
-            
+
             // Associated objects must NOT be validated here, they are validating themselfes!
             //Validator.TryValidateProperty(ReadAdress, 
             //    new ValidationContext(this, null, null) { MemberName = "ReadAdress" }, 
             //    results);            
-            
+
             if (
-                (ReadAdress == null || ReadAdress.HasErrors) && 
+                (ReadAdress == null || ReadAdress.HasErrors) &&
                 (WriteAdress == null || WriteAdress.HasErrors))
             {
-                yield return new ValidationResult("At least one Group Adress has to be filled with a valid value.", new List<string>{"ReadAdress", "WriteAdress"});
-            }            
+                yield return new ValidationResult("At least one Group Adress has to be filled with a valid value.", new List<string> { "ReadAdress", "WriteAdress" });
+            }
         }
     }
 }

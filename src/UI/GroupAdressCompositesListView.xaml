@@ -10,10 +10,30 @@
       d:DataContext="{d:DesignInstance Type=ui:GroupAdressCompositesListViewModel}"
 	>
     
+    <!--
+    #############################
+    MultiDataTrigger on "HasError" is possible for cross-property validation.
+    (But not used here as in this example validation is part of the domain...
+    ############################
+    -->
+    
     <DataGrid ItemsSource="{Binding GroupAdressCollectionView.View}" AutoGenerateColumns="False">
-       
+        <!--<DataGrid.Resources>
+            <Style TargetType="{x:Type TextBox}">
+                <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+                </Style.Triggers>
+            </Style>
+        </DataGrid.Resources>-->
+       <DataGrid.RowHeaderStyle>
+            <Style TargetType="{x:Type DataGridRowHeader}">
+                <Setter Property="DataGridRowHeader.ToolTip" Value="{Binding Path=GlobalErrorsArray[0]}"/>                                                
+            </Style>
+        </DataGrid.RowHeaderStyle>
         <DataGrid.Columns>
-            <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}"/>            
+            <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}"/>
             <DataGridTextColumn Header="Read GA" Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">

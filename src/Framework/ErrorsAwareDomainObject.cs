@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Practices.Prism.ViewModel;
 
 
@@ -32,18 +33,16 @@ namespace MultiPropertyValidationExample.Framework
     /// <remarks>
     /// Provides support for implementing <see cref="INotifyPropertyChanged"/> and 
     /// implements <see cref="INotifyDataErrorInfo"/> using <see cref="System.ComponentModel.DataAnnotations.ValidationAttribute"/> instances
-    /// on the validated properties.
+    /// on the validated properties.    
+    /// 
+    /// INotifyDataErrorInfo: HasErrors/GetErrors/ErrorsChanged; only available > .Net 4.5!! But you can use most other classes as "ValidationResult"...
+    /// IDataErrorInfo: Error/Item
     /// </remarks>
     public abstract class ErrorsAwareDomainObject : INotifyPropertyChanged, INotifyDataErrorInfo
-    {
-        private ErrorsContainer<ValidationResult> _errorsContainer;
+    {         
+        #region ability to store errors in ErrorsContainer and INotifyDataErrorInfo (HasErrors/GetErrors/ErrorsChanged)
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ErrorsAwareDomainObject"/> class.
-        /// </summary>
-        protected ErrorsAwareDomainObject()
-        {            
-        }        
+        private ErrorsContainer<ValidationResult> _errorsContainer;
 
         /// <summary>
         /// Event raised when the validation status changes.
@@ -62,15 +61,15 @@ namespace MultiPropertyValidationExample.Framework
 
         /// <summary>
         /// Gets the container for errors in the properties of the domain object.
-        /// </summary>
+        /// </summary>        
         protected ErrorsContainer<ValidationResult> ErrorsContainer
         {
-            get {
+            get {                
                 return _errorsContainer ??
                        (_errorsContainer = new ErrorsContainer<ValidationResult>(RaiseErrorsChanged));
             }
         }
-
+       
         /// <summary>
         /// Returns the errors for <paramref name="propertyName"/>.
         /// </summary>
@@ -82,7 +81,18 @@ namespace MultiPropertyValidationExample.Framework
             return _errorsContainer.GetErrors(propertyName);
         }
 
+        #endregion
 
+
+        /// <summary>
+        /// TODO: this is only my temporary helper.
+        /// => Find more elegant solution to bind to errors (we need a simple property with getter instead of a get-method)
+        /// E.g. bind to "ErrorsChanged" event and so on...
+        /// </summary>
+        public string[] GlobalErrorsArray { get { return ErrorsContainer.GetErrors("").Select(e => e.ErrorMessage).ToArray(); } }
+
+
+        #region property validation
 
         /// <summary>
         /// Validates <paramref name="value"/> as the value for the propertyName named <paramref name="propertyName"/>.
@@ -92,9 +102,7 @@ namespace MultiPropertyValidationExample.Framework
         protected void ValidateProperty(string propertyName, object value)
         {
             if (string.IsNullOrEmpty(propertyName))
-            {
-                throw new ArgumentNullException("propertyName");
-            }
+                throw new ArgumentNullException("propertyName");            
 
             ValidateProperty(new ValidationContext(this, null, null) { MemberName = propertyName }, value);
         }
@@ -108,9 +116,7 @@ namespace MultiPropertyValidationExample.Framework
         protected virtual void ValidateProperty(ValidationContext validationContext, object value)
         {
             if (validationContext == null)
-            {
-                throw new ArgumentNullException("validationContext");
-            }
+                throw new ArgumentNullException("validationContext");            
 
             var validationResults = new List<ValidationResult>();
             Validator.TryValidateProperty(value, validationContext, validationResults);
@@ -148,12 +154,18 @@ namespace MultiPropertyValidationExample.Framework
                     {
                         new ValidationResult(errorMessage)
                     });
+            
+            //RaiseErrorsChanged(propertyName); // ??
+            RaisePropertyChanged("HasErrors");
+            RaisePropertyChanged("GlobalErrorsArray");
         }
 
         public void SetError(string errorMessage)
         {
             SetError("", errorMessage);            
         }
+
+        #endregion
 
         #region raiseproperty changed stuff (maybe part of some other framework base class...)
 
