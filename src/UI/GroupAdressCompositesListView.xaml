@@ -17,6 +17,7 @@
     ############################
     -->
     
+    <StackPanel Orientation="Vertical">
     <DataGrid ItemsSource="{Binding GroupAdressCollectionView.View}" AutoGenerateColumns="False">
         <!--<DataGrid.Resources>
             <Style TargetType="{x:Type TextBox}">
@@ -34,7 +35,7 @@
         </DataGrid.RowHeaderStyle>
         <DataGrid.Columns>
             <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}"/>
-            <DataGridTextColumn Header="Read GA" Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
+                <DataGridTextColumn Header="Read GA" Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="DataGridCell.ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
@@ -51,5 +52,12 @@
         </DataGrid.Columns>
     </DataGrid>
 
-    
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Format: 0/0/0" Command="{Binding SetFormatSlashedCommand}" />
+            <Button Content="Format: 0 0 0" Command="{Binding SetFormatSpacedCommand}"/>
+            <TextBlock Text="{Binding CurrentGaStyle}"></TextBlock>
+        </StackPanel>
+        
+    </StackPanel>
+
 </UserControl>

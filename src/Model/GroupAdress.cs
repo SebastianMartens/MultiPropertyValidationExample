@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using MultiPropertyValidationExample.Framework;
 
 namespace MultiPropertyValidationExample.Model
@@ -24,8 +25,28 @@ namespace MultiPropertyValidationExample.Model
         /// </summary>
         /// <param name="value"></param>
         public GroupAdress(string value)
-        {           
-            UShortValue = ToUshort(value);         
+        {            
+            // regex can be improved and has to be tested!
+            // These are supported matches for "42" now:
+            // 42
+            // 0 0 42
+            // 0/0/42
+            // 0/0 42            
+            // 55 666 7/88 42
+
+            var regex = new Regex(@"^(?:[0-9]*\s*[0-9]*\s*[/ ])*([0-9]+$)");
+            var match = regex.Match(value);
+            if (match.Success)
+            {
+                // expression groups: 
+                // (?:) => uncaptured group (ignored)
+                // () captured group is available by match.Groups[1] as match.Groups[0] contains complete matching string.
+                UShortValue = ToUshort(match.Groups[1].Value);
+            }
+            else
+            {
+                throw new FormatException("The input string in in an unsupported format.");
+            }
         }
 
         /// <summary>
@@ -40,14 +61,17 @@ namespace MultiPropertyValidationExample.Model
 
         #region toString and parse methods
 
-        /// <summary>
-        /// TODO: get default display options from some kind of application settings and return 
+        /// <summary>        
         /// formated version of group adress value.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return UShortValue.ToString();
+            // this is the "save" version of getting enum values from our "object"-based setting service (could be improved :-))
+            // simpler would be: var style = (GaStylesEnum) SettingsService.GetSetting("CurrentGaStyle")
+            var style = SettingsService.GetSetting("CurrentGaStyle") is GaStylesEnum ? (GaStylesEnum) SettingsService.GetSetting("CurrentGaStyle") : GaStylesEnum.Slashed; 
+
+            return ToString(style);
         }
 
         /// <summary>
@@ -57,14 +81,17 @@ namespace MultiPropertyValidationExample.Model
         /// </summary>
         /// <param name="style"></param>
         /// <returns></returns>
-        public string ToString(string style)
+        public string ToString(GaStylesEnum style)
         {
             switch (style) // in real app "style" is an enum...
             {
-                case "full":
+                case GaStylesEnum.Slashed:
                     return String.Format("0/0/{0}", UShortValue);
-            }
-            return null;
+                case GaStylesEnum.Spaced:
+                    return String.Format("0 0 {0}", UShortValue);
+                default:
+                    return UShortValue.ToString();
+            }            
         }
 
         /// <summary>
@@ -76,7 +103,7 @@ namespace MultiPropertyValidationExample.Model
         /// <returns></returns>
         public static GroupAdress Parse(string value)
         {            
-            return new GroupAdress(value); // consider to create constructor for init
+            return new GroupAdress(value);
         }
         
         /// <summary>

@@ -75,7 +75,9 @@
     <Compile Include="Framework\BaseConverter.cs" />
     <Compile Include="Framework\ErrorsAwareDomainObject.cs" />
     <Compile Include="Framework\Test\DomainObjectTest.cs" />
+    <Compile Include="Model\GaStylesEnum.cs" />
     <Compile Include="Model\GroupAdressComposite.cs" />
+    <Compile Include="Model\SettingsService.cs" />
     <Compile Include="UI\GroupAdressCompositesListViewModel.cs" />
     <Compile Include="UI\GroupAdressCompositesListView.xaml.cs">
       <DependentUpon>GroupAdressCompositesListView.xaml</DependentUpon>
