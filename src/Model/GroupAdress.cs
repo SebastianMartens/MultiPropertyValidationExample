@@ -33,8 +33,7 @@ namespace MultiPropertyValidationExample.Model
             // 0/0/42
             // 0/0 42            
             // 55 666 7/88 42
-
-            var regex = new Regex(@"^(?:[0-9]*\s*[0-9]*\s*[/ ])*([0-9]+$)");
+            var regex = new Regex(@"^(?:[0-9]*\s*[0-9]*\s*[/ ])*([0-9]+)\s*$");            
             var match = regex.Match(value);
             if (match.Success)
             {
@@ -70,7 +69,6 @@ namespace MultiPropertyValidationExample.Model
             // this is the "save" version of getting enum values from our "object"-based setting service (could be improved :-))
             // simpler would be: var style = (GaStylesEnum) SettingsService.GetSetting("CurrentGaStyle")
             var style = SettingsService.GetSetting("CurrentGaStyle") is GaStylesEnum ? (GaStylesEnum) SettingsService.GetSetting("CurrentGaStyle") : GaStylesEnum.Slashed; 
-
             return ToString(style);
         }
 
