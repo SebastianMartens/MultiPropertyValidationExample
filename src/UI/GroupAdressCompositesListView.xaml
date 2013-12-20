@@ -35,11 +35,26 @@
         </DataGrid.RowHeaderStyle>
         <DataGrid.Columns>
             <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}"/>
-                <DataGridTextColumn Header="Read GA" Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
+                
+                <DataGridTextColumn Header="Read GA" 
+                                    Binding="{Binding ReadAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}, NotifyOnTargetUpdated=True}"
+                                    >                    
+                    <!-- 
+                    Validation during typing: We need an event when the input should be formatted with the current style ("0 0 0" or "0/0/0").
+                    => The formatting is performed when the value is written back to the cell using the converter (NOT during typing!).
+                    This is default behaviour and is equivalent to setting Binding.UpdateSourceTrigger=LostFocus.
+                    
+                    Additionally (!) we can validate the text during typing by binding to the PropertyChanged event or perhaps "TargetUpdated".
+                    Unfortunately these are not supported by the DataGrid...
+                    => check out the Telerik grid for these events.
+                    => In this scenario the domain model/entity is always valid (this is great ;-)). It does NOT contain the temporary values during editing 
+                    and therefore is not able to report these errors via INotifyDataErrorInfo! You could instead set an error in the UI (e.g. 
+                    EventTrigger/property setter on the grid cell).
+                    -->
                 <DataGridTextColumn.ElementStyle>
                     <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="DataGridCell.ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
-                    </Style>
+                        <Setter Property="DataGridCell.ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>                                                
+                    </Style>                    
                 </DataGridTextColumn.ElementStyle>
             </DataGridTextColumn>
             <DataGridTextColumn Header="Write GA" Binding="{Binding WriteAdress, Mode=TwoWay, Converter={converters:GroupAdressToStringConverter}}">
@@ -53,8 +68,8 @@
     </DataGrid>
 
         <StackPanel Orientation="Horizontal">
-            <Button Content="Format: 0/0/0" Command="{Binding SetFormatSlashedCommand}" />
-            <Button Content="Format: 0 0 0" Command="{Binding SetFormatSpacedCommand}"/>
+            <Button Content="Format: 0/0/0" Padding="5,0,5,0" Command="{Binding SetFormatSlashedCommand}" />
+            <Button Content="Format: 0 0 0" Padding="5,0,5,0" Command="{Binding SetFormatSpacedCommand}"/>
             <TextBlock Text="{Binding CurrentGaStyle}"></TextBlock>
         </StackPanel>
         
